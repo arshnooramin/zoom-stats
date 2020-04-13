@@ -1,4 +1,6 @@
 import json
+import csv
+import datetime
 from zoomus import ZoomClient
 from utils import *
 
@@ -12,6 +14,13 @@ Flow:
 
 API_KEY = "FDzxXrLwR9WGePxqqYbooA"
 API_SECRET = "X7wEDBNtG68L6P1aAxLCNhKERmLIGTCoPnwo"
+
+todayDate = datetime.date.today()
+
+CSV_FILE_NAME = str(todayDate)
+
+csv_rows = [["Meeting Name", "Meeting ID", "Organizer", "Organizer Department",
+            "Organizer Location", "Registrant Name", "Participant Name"]]
 
 # initialize the client
 client = ZoomClient(API_KEY, API_SECRET)
@@ -33,7 +42,9 @@ for user_page_number in range(user_page_count):
 
     for user in user_list["users"]:
         user_count += 1
+
         user_id = user["id"]
+        # user_obj = json.loads(client.user.get(id=str(user_id)))
 
         group_names = []
         if user.get("group_ids") is not None:
@@ -45,7 +56,9 @@ for user_page_number in range(user_page_count):
         else:
             group_names.append("No Groups Assigned")
 
-        print("{}: {} {}. Groups: {}".format(user_id, user["first_name"], user["last_name"], ", ".join(group_names)))
+        # organizer_name = user_obj["first_name"] + " " + user_obj["last_name"]
+        # organizer_dept = `
+        print("{}: {}. Groups: {}".format(user_id, user_name, organizer_dept))
 
         meeting_init = json.loads(client.meeting.list(user_id=user_id).content)
         meeting_page_count = int(meeting_init["page_count"])
@@ -60,7 +73,28 @@ for user_page_number in range(user_page_count):
                 for meeting in meetings:
                     meeting_count += 1
                     meeting_id = str(meeting["id"])
-                    print("\t{}: {}".format(str(meeting["id"]), meeting["topic"]))
+                    meeting_name = meeting["topic"]
+                    print("\t{}: {}".format(meeting_id, meeting_name))
+
+                    registrant_count = 0
+                    registrant_obj = get_registrants(meeting_id, client)
+
+                    print("\t\t---- Registrants ----")
+
+                    if registrant_obj.get("registrants") is None:
+                        print("\t\tNo Registrations found!\n")
+                        break
+
+                    else:
+                        registrants = registrant_obj["registrants"]
+
+                        for registrant in registrants:
+                            registrant_count += 1
+                            # print(registrant)
+                            print("\t\t" + registrant["first_name"])
+                            # output_file.writelines('\t' + participant['name'])
+
+                        print("\t\t-> Registrant Count: {}\n".format(registrant_count))
 
                     participant_count = 0
                     participant_obj = get_participants(meeting_id, client)
@@ -80,25 +114,6 @@ for user_page_number in range(user_page_count):
                             # output_file.writelines('\t' + participant['name'])
 
                         print("\t\t-> Participant Count: {}\n".format(participant_count))
-
-                    registrant_count = 0
-                    registrant_obj = get_registrants(meeting_id, client)
-
-                    print("\t\t---- Registrants ----")
-
-                    if registrant_obj.get("registrants") is None:
-                        print("\t\tNo Registrations found!\n")
-
-                    else:
-                        registrants = registrant_obj["registrants"]
-
-                        for registrant in registrants:
-                            registrant_count += 1
-                            # print(registrant)
-                            print("\t\t" + registrant["first_name"])
-                            # output_file.writelines('\t' + participant['name'])
-
-                        print("\t\t-> Registrant Count: {}\n".format(registrant_count))
 
             else:
                 print("\tNo Meetings Found\n")
