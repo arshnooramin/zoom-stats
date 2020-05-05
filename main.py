@@ -1,4 +1,3 @@
-import json
 import csv
 import datetime
 from zoomus import ZoomClient
@@ -20,8 +19,7 @@ todayDate = datetime.date.today()
 CSV_FILE_NAME = str(todayDate) + ".csv"
 
 header = ["Meeting Name", "Meeting ID", "Meeting Location", "Meeting Grades", "Meeting Time", "Organizer",
-          "Organizer Department", "Organizer Location", "Registrant Name", "Participant Name", "IP_Address",
-          "Geo_Location"]
+          "Organizer Department", "Organizer Location", "Participant Name"]
 
 with open(CSV_FILE_NAME, 'wb') as report_file:
     writer = csv.writer(report_file)
@@ -71,10 +69,10 @@ for role in range(2):
             #     group_names.append("No Groups Assigned")
 
             organizer_name = user_obj["first_name"] + " " + user_obj["last_name"]
-            if user_obj.get("dept") is not None:
-                organizer_dept = ""
-            else:
-                organizer_dept = user_obj["dept"]
+            # if user_obj.get("dept") is not None:
+            organizer_dept = ""
+            # else:
+            #     organizer_dept = user_obj["dept"]
             organizer_loc = user_obj["location"]
 
             # print("Organizer: {}".format(organizer_name))
@@ -114,7 +112,7 @@ for role in range(2):
                         if meeting_report.get("start_time") is not None:
                             meeting_time = parse_date(meeting_report["start_time"])
 
-                        registrant_count = 0
+                        # registrant_count = 0
                         registrant_obj = get_registrants(meeting_id, client)
 
                         # print("\t\t---- Registrants ----")
@@ -126,28 +124,26 @@ for role in range(2):
                         if registrant_obj.get("registrants") is not None:
                             registrants = registrant_obj["registrants"]
 
-                            registrant_list = []
+                            # registrant_list = []
                             participant_list = []
-                            ipaddress_list = []
-                            geolocation_list = []
 
-                            for registrant in registrants:
-                                registrant_count += 1
-                                # print(registrant)
-
-                                registrant_first_name = registrant["first_name"].encode('utf-8')
-                                registrant_last_name = ""
-                                if registrant.get("last_name") is not None:
-                                    registrant_last_name = registrant["last_name"].encode('utf-8')
-                                registrant_name = registrant_first_name + registrant_last_name
-
-                                registrant_list.append(registrant_name)
+                            # for registrant in registrants:
+                            #     registrant_count += 1
+                            #     # print(registrant)
+                            #
+                            #     registrant_first_name = registrant["first_name"].encode('utf-8')
+                            #     registrant_last_name = ""
+                            #     if registrant.get("last_name") is not None:
+                            #         registrant_last_name = registrant["last_name"].encode('utf-8')
+                            #     registrant_name = registrant_first_name + registrant_last_name
+                            #
+                            #     registrant_list.append(registrant_name)
 
                                 # print("\t\t" + registrant_name)
                                 # output_file.writelines('\t' + participant['name'])
 
                             # remove duplicates from the registrant list
-                            registrant_list = list(set(registrant_list))
+                            # registrant_list = list(set(registrant_list))
 
                             # print("\t\t-> Registrant Count: {}\n".format(registrant_count))
 
@@ -174,44 +170,33 @@ for role in range(2):
                                 # remove duplicates from the registrant list
                                 participant_list = list(set(participant_list))
 
-                                ipaddress_count = 0
-                                ip_address_obj = get_ipaddress(meeting_id, client)
-                                if ip_address_obj.get("participants") is not None:
-                                   parts = ip_address_obj.get("participants")
-                                for part in parts:
-                                    ipaddress_count += 1
-                                    ipaddress_list.append(part["ip_address"].encode('utf-8'))
-                                    geolocation_list.append(part["location"].encode('utf-8'))
-                                ipaddress_list = list(set(ipaddress_list))
-                                geolocation_list = list(set(geolocation_list))
-
-                            section_length = 0
-
-                            if len(participant_list) <= len(registrant_list):
-                                section_length = len(registrant_list)
-                            else:
-                                section_length = len(participant_list)
-
+                            # section_length = 0
+                            #
+                            # if len(participant_list) <= len(registrant_list):
+                            #     section_length = len(registrant_list)
+                            # else:
+                            #     section_length = len(participant_list)
+                            #
                             section = []
 
-                            for i in range(section_length):
-                                section.append([meeting_name, meeting_id, meeting_loc, meeting_grades, meeting_time,
-                                                organizer_name, organizer_dept, organizer_loc, "", "", "", ""])
-
-                            for i in range(len(registrant_list)):
-                                section[i][8] = registrant_list[i]
-
                             for i in range(len(participant_list)):
-                                section[i][9] = participant_list[i]
+                                section.append([meeting_name, meeting_id, meeting_loc, meeting_grades, meeting_time,
+                                                organizer_name, organizer_dept, organizer_loc, participant_list[i]])
 
-                            for i in range(len(ipaddress_list)):
-                                section[i][10] = ipaddress_list[i]
+                            # for i in range(len(registrant_list)):
+                            #     section[i][8] = registrant_list[i]
+                            #
+                            # for i in range(len(participant_list)):
+                            #     section[i][9] = participant_list[i]
+                            #
+                            # for i in range(len(ipaddress_list)):
+                            #     section[i][10] = ipaddress_list[i]
+                            #
+                            # for i in range(len(geolocation_list)):
+                            #     section[i][11] = geolocation_list[i]
 
-                            for i in range(len(geolocation_list)):
-                                section[i][11] = geolocation_list[i]
-
-                            print(registrant_list)
-                            print(participant_list)
+                            # print(registrant_list)
+                            # print(participant_list)
                             print(section)
 
                             # Write the CSV File
