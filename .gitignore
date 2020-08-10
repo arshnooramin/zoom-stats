@@ -1,5 +1,5 @@
 # created by virtualenv automatically
 .env
-/venv/*
-/data/
-/.idea/*
+venv/*
+data/
+.idea/*
