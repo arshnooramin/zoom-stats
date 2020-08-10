@@ -3,7 +3,7 @@ import json
 
 def get_participants(meet_id, client_pointer, page_size=300):
     resp_obj = client_pointer.get_request(
-        "/report/meetings/{}/participants?page_size={}".format(meet_id, str(page_size)))
+        "/report/meetings/{}/participants?type=past&page_size={}".format(meet_id, str(page_size)))
     return json.loads(resp_obj.content)
 
 
@@ -30,13 +30,19 @@ def get_groups(client_pointer, page_size=300):
     return group_dict
 
 
-def parse_date(date_string):
+def parse_date_string(date_string):
     date_time = date_string.split("T")
     date_all = date_time[0].split("-")
     date_format = date_all[1] + "/" + date_all[2] + "/" + date_all[0]
     time = date_time[1][:-4]
 
     return date_format + " " + time
+
+
+def parse_date_int(date_string):
+    date_time = date_string.split("T")
+    time = date_time[1][:-1].split(":")
+    return time[0] * 3600 + time[1] * 60 + time[2]
 
 
 def get_meeting_report(meet_id, client_pointer, page_size=300):
