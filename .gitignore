@@ -2,4 +2,4 @@
 .env
 /venv/*
 /data/
-/.idea/
+/.idea/*
