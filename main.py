@@ -17,12 +17,12 @@ API_SECRET = config('API_SECRET')
 
 todayDate = datetime.date.today()
 
-CSV_FILE_NAME = str(todayDate) + ".csv"
+CSV_FILE_NAME = "./data/" + str(todayDate) + ".csv"
 
 header = ["Meeting Name", "Meeting ID", "Meeting Location", "Meeting Grades", "Meeting Time", "Organizer",
           "Organizer Department", "Organizer Location", "Participant Name"]
 
-with open(CSV_FILE_NAME, 'wb') as report_file:
+with open(CSV_FILE_NAME, 'w', newline='') as report_file:
     writer = csv.writer(report_file)
     writer.writerow(header)
     print("Report File Configured!")
@@ -36,6 +36,8 @@ for role in range(2):
     # initial call to get the page counts
     user_init = json.loads(client.user.list(role_id=role + 1, page_size=300).content)
 
+    print(user_init)
+
     user_page_count = int(user_init["page_count"])
 
     meeting_count = 0
@@ -44,7 +46,8 @@ for role in range(2):
     for user_page_number in range(user_page_count):
         # user list data on page -> page_number
         user_list = json.loads(
-            client.user.list(role_id=role + 1, page_size=300, page_number=user_page_number + 1).content)
+            client.user.list(role_id=role + 1, page_size=300, page_number=user_page_number + 1).content
+        )
 
         # group_dict = get_groups(client)
 
@@ -79,7 +82,7 @@ for role in range(2):
             organizer_loc = user_obj["location"]
 
             meeting_init = json.loads(client.meeting.list(user_id=user_id).content)
-            meeting_page_count = int(meeting_init["page_count"])
+            meeting_page_count = int(meeting_init["page_size"])
 
             for meeting_page_number in range(meeting_page_count):
                 meeting_obj = json.loads(
@@ -136,12 +139,13 @@ for role in range(2):
 
                             for i in range(len(participant_list)):
                                 section.append([meeting_name, meeting_id, meeting_loc, meeting_grades, meeting_time,
-                                                organizer_name, organizer_dept, organizer_loc, participant_list[i]])
+                                                organizer_name, organizer_dept, organizer_loc,
+                                                participant_list[i].decode('utf-8')])
 
                             print(section)
 
                             # Write the CSV File
-                            with open(CSV_FILE_NAME, 'ab') as report_file:
+                            with open(CSV_FILE_NAME, 'a', newline='') as report_file:
                                 writer = csv.writer(report_file)
                                 writer.writerows(section)
                                 print("Meeting Successfully Added!")
