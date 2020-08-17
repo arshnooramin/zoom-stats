@@ -38,8 +38,6 @@ for role in range(2):
     # initial call to get the page counts
     user_init = json.loads(client.user.list(role_id=role + 1, page_size=300).content)
 
-    print(user_init)
-
     user_page_count = int(user_init["page_count"])
 
     meeting_count = 0
@@ -50,6 +48,9 @@ for role in range(2):
         user_list = json.loads(
             client.user.list(role_id=role + 1, page_size=300, page_number=user_page_number + 1).content
         )
+
+        print("user_list")
+        print(user_list)
 
         # group_dict = get_groups(client)
 
@@ -83,13 +84,20 @@ for role in range(2):
 
             organizer_loc = user_obj["location"]
 
-            meeting_init = json.loads(client.meeting.list(user_id=user_id).content)
-            meeting_page_count = int(meeting_init["page_size"])
+            meeting_init = json.loads(client.meeting.list(user_id=user_id, page_number=1, type="past").content)
+
+            print("meeting_init")
+            print(meeting_init)
+
+            meeting_page_count = int(meeting_init["page_count"])
 
             for meeting_page_number in range(meeting_page_count):
                 meeting_obj = json.loads(
                     client.meeting.list(user_id=user_id, page_number=meeting_page_number + 1, type="past").content)
                 meetings = meeting_obj["meetings"]
+
+                print("meetings")
+                print(meetings)
 
                 if len(meetings) > 0:
                     for meeting in meetings:
@@ -116,10 +124,10 @@ for role in range(2):
                         if meeting_report.get("start_time") is not None:
                             meeting_time = parse_date_string(meeting_report["start_time"])
 
-                        registrant_obj = get_registrants(meeting_id, client)
-
-                        if registrant_obj.get("registrants") is not None:
-                            registrants = registrant_obj["registrants"]
+                        # registrant_obj = get_registrants(meeting_id, client)
+                        #
+                        # if registrant_obj.get("registrants") is not None:
+                        #     registrants = registrant_obj["registrants"]
 
                             participant_list = []
 
@@ -128,6 +136,9 @@ for role in range(2):
 
                             if participant_obj.get("participants") is not None:
                                 participants = participant_obj["participants"]
+
+                                print("participants")
+                                print(participants)
 
                                 for participant in participants:
                                     participant_count += 1
@@ -142,7 +153,7 @@ for role in range(2):
                             for i in range(len(participant_list)):
                                 section.append([meeting_name, meeting_id, meeting_loc, meeting_grades, meeting_time,
                                                 organizer_name, organizer_dept, organizer_loc,
-                                                participant_list[i].decode('utf-8')])
+                                                participant_list[i]])
 
                             print(section)
 
@@ -169,5 +180,3 @@ for role in range(2):
                 else:
                     pass
                     # print("\tNo Meetings Found\n")
-
-
