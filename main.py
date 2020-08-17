@@ -1,5 +1,7 @@
 import csv
 import datetime
+import os
+
 from zoomus import ZoomClient
 from utils import *
 from decouple import config
@@ -17,15 +19,15 @@ API_SECRET = config('API_SECRET')
 
 todayDate = datetime.date.today()
 
-CSV_FILE_NAME = "./data/" + str(todayDate) + ".csv"
+DIR_NAME = "./data/" + str(todayDate)
 
 header = ["Meeting Name", "Meeting ID", "Meeting Location", "Meeting Grades", "Meeting Time", "Organizer",
           "Organizer Department", "Organizer Location", "Participant Name"]
 
-with open(CSV_FILE_NAME, 'w', newline='') as report_file:
-    writer = csv.writer(report_file)
-    writer.writerow(header)
-    print("Report File Configured!")
+location = []
+
+os.mkdir(DIR_NAME)
+os.chdir(DIR_NAME)
 
 # initialize the client
 client = ZoomClient(API_KEY, API_SECRET)
@@ -144,11 +146,22 @@ for role in range(2):
 
                             print(section)
 
-                            # Write the CSV File
-                            with open(CSV_FILE_NAME, 'a', newline='') as report_file:
-                                writer = csv.writer(report_file)
-                                writer.writerows(section)
-                                print("Meeting Successfully Added!")
+                            curr_csv_name = meeting_loc + '.csv'
+
+                            if section and (meeting_loc in location):
+                                # Write the CSV File
+                                with open(curr_csv_name, 'a', newline='') as report_file:
+                                    writer = csv.writer(report_file)
+                                    writer.writerows(section)
+                                    print("Meeting Successfully Added!")
+
+                            elif section and (meeting_loc not in location):
+                                location.append(meeting_loc)
+                                with open(curr_csv_name, 'w', newline='') as report_file:
+                                    writer = csv.writer(report_file)
+                                    writer.writerow(header)
+                                    writer.writerows(section)
+                                    print("Report File Configured for " + meeting_loc)
 
                         else:
                             pass
@@ -156,3 +169,5 @@ for role in range(2):
                 else:
                     pass
                     # print("\tNo Meetings Found\n")
+
+
