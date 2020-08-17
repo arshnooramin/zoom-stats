@@ -11,5 +11,5 @@ A simple python script I created for a country wide educational institute as the
 - to activate environment: `source venv/bin/activate`
 - install dependancies: `pip install -r requirements.txt`
 - to deactivate: `deactivate`
-- create a `.env` file (same directory as `.env.sample`) and add the api key and api secret
+- create a `.env` file (same directory as `.env.sample`) and add the API key and API secret
 - create a `data` directory where the generated reports will be saved
