@@ -3,7 +3,7 @@ import datetime
 import os
 
 from zoomus import ZoomClient
-from utils import *
+from ZoomClassStats.utils import *
 from decouple import config
 
 """
@@ -58,6 +58,14 @@ for role in range(2):
         for user in user_list["users"]:
             user_count += 1
 
+            useremail = user["email"]
+
+            """
+        #logic to see only Vre in email address.
+        if "vre" in useremail:
+            print ("user emailis : " + useremail)
+             """
+
             user_id = user["id"]
             user_obj = json.loads(client.user.get(id=user_id).content)
 
@@ -68,7 +76,7 @@ for role in range(2):
             """
 
             # Uncomment if needed
-            """"
+            group_dict = get_groups(client)
             group_names = []
             if user.get("group_ids") is not None:
                 user_groups = user["group_ids"]
@@ -78,7 +86,6 @@ for role in range(2):
 
             else:
                 group_names.append("No Groups Assigned")
-            """
 
             organizer_name = user_obj["first_name"] + " " + user_obj["last_name"]
             organizer_dept = ""
@@ -126,10 +133,10 @@ for role in range(2):
                         if meeting_report.get("start_time") is not None:
                             meeting_time = parse_date_string(meeting_report["start_time"])
 
-                        # registrant_obj = get_registrants(meeting_id, client)
-                        #
-                        # if registrant_obj.get("registrants") is not None:
-                        #     registrants = registrant_obj["registrants"]
+                            # registrant_obj = get_registrants(meeting_id, client)
+                            #
+                            # if registrant_obj.get("registrants") is not None:
+                            #     registrants = registrant_obj["registrants"]
 
                             participant_list = []
 
@@ -182,3 +189,8 @@ for role in range(2):
                 else:
                     pass
                     # print("\tNo Meetings Found\n")
+        """
+        #logic to print only email address
+        else:
+            print("email is : " + useremail)
+        """
