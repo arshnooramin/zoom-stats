@@ -18,8 +18,9 @@ API_KEY = config('API_KEY')
 API_SECRET = config('API_SECRET')
 
 todayDate = datetime.date.today()
-
-DIR_NAME = "./data/" + str(todayDate)
+Hour = str(datetime.datetime.now())[11:13]
+Minute = str(datetime.datetime.now())[14:16]
+DIR_NAME = "./data/" + str(todayDate) + "-" + Hour + "-" + Minute
 
 header = ["Meeting Name", "Meeting ID", "Meeting Location", "Meeting Grades", "Meeting Time", "Organizer",
           "Organizer Department", "Organizer Location", "Participant Name"]
@@ -104,7 +105,8 @@ for role in range(2):
                         meeting_count += 1
 
                         meeting_id = meeting["id"]
-                        meeting_name = meeting["topic"]
+                        meeting_name1 = meeting["topic"]
+                        meeting_name = meeting_name1.replace("/", " ")
 
                         # print("\tMeeting: {}".format(meeting_name))
                         meeting_loc = ""
