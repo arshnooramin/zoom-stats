@@ -113,7 +113,7 @@ for role in range(2):
 
                         meeting_id = meeting["id"]
                         meeting_name1 = meeting["topic"]
-                        meeting_name = meeting_name1.replace("/", " ")
+                        meeting_name = meeting_name1.replace("/", "").replace("Aash-", "").replace("AASH-", "")
 
                         # print("\tMeeting: {}".format(meeting_name))
                         meeting_loc = ""
@@ -151,7 +151,7 @@ for role in range(2):
 
                                 for participant in participants:
                                     participant_count += 1
-                                    participant_name = participant["name"].encode('utf-8')
+                                    participant_name = participant["name"]
                                     participant_list.append(participant_name)
 
                                 # remove duplicates from the registrant list
@@ -177,7 +177,7 @@ for role in range(2):
 
                             elif section and (meeting_loc not in location):
                                 location.append(meeting_loc)
-                                with open(curr_csv_name, 'w', newline='') as report_file:
+                                with open(curr_csv_name, 'w', newline='' , encoding="utf-8") as report_file:
                                     writer = csv.writer(report_file)
                                     writer.writerow(header)
                                     writer.writerows(section)
