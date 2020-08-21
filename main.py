@@ -146,12 +146,12 @@ for role in range(2):
                             if participant_obj.get("participants") is not None:
                                 participants = participant_obj["participants"]
 
-                                print("participants")
-                                print(participants)
+                                #print("participants")
+                                #print(participants)
 
                                 for participant in participants:
                                     participant_count += 1
-                                    participant_name = participant["name"]
+                                    participant_name = participant["name"].replace("\r\n", "\n").replace('\u2605', '').replace('\U0001f47d', '')
                                     participant_list.append(participant_name)
 
                                 # remove duplicates from the registrant list
