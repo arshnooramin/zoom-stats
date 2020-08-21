@@ -113,7 +113,7 @@ for role in range(2):
 
                         meeting_id = meeting["id"]
                         meeting_name1 = meeting["topic"]
-                        meeting_name = meeting_name1.replace("/", "").replace("Aash-", "").replace("AASH-", "")
+                        meeting_name = meeting_name1.replace("/", "")
 
                         # print("\tMeeting: {}".format(meeting_name))
                         meeting_loc = ""
