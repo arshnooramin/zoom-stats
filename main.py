@@ -1,7 +1,10 @@
 import csv
 import datetime
+import os
+import shutil
+
 from zoomus import ZoomClient
-from utils import *
+from ZoomClassStats.utils import *
 from decouple import config
 
 """
@@ -16,16 +19,18 @@ API_KEY = config('API_KEY')
 API_SECRET = config('API_SECRET')
 
 todayDate = datetime.date.today()
+Hour = str(datetime.datetime.now())[11:13]
+Minute = str(datetime.datetime.now())[14:16]
+DIR_NAME = "./data/" + str(todayDate) + "-" + Hour + "-" + Minute
 
-CSV_FILE_NAME = "./data/" + str(todayDate) + ".csv"
 
 header = ["Meeting Name", "Meeting ID", "Meeting Location", "Meeting Grades", "Meeting Time", "Organizer",
-          "Organizer Department", "Organizer Location", "Participant Name"]
+          "Organizer Department", "Organizer Location", "Participant Name" , "Registration_email" ]
 
-with open(CSV_FILE_NAME, 'w', newline='') as report_file:
-    writer = csv.writer(report_file)
-    writer.writerow(header)
-    print("Report File Configured!")
+location = []
+
+os.mkdir(DIR_NAME)
+os.chdir(DIR_NAME)
 
 # initialize the client
 client = ZoomClient(API_KEY, API_SECRET)
@@ -35,8 +40,6 @@ for role in range(2):
     # look for users that are categorized under role_id '2' i.e. all the teacher
     # initial call to get the page counts
     user_init = json.loads(client.user.list(role_id=role + 1, page_size=300).content)
-
-    print(user_init)
 
     user_page_count = int(user_init["page_count"])
 
@@ -49,10 +52,21 @@ for role in range(2):
             client.user.list(role_id=role + 1, page_size=300, page_number=user_page_number + 1).content
         )
 
+        print("user_list")
+        print(user_list)
+
         # group_dict = get_groups(client)
 
         for user in user_list["users"]:
             user_count += 1
+
+            useremail = user["email"]
+
+            """
+        #logic to see only Vre in email address.
+        if "vre" in useremail:
+            print ("user emailis : " + useremail)
+             """
 
             user_id = user["id"]
             user_obj = json.loads(client.user.get(id=user_id).content)
@@ -64,7 +78,7 @@ for role in range(2):
             """
 
             # Uncomment if needed
-            """"
+            group_dict = get_groups(client)
             group_names = []
             if user.get("group_ids") is not None:
                 user_groups = user["group_ids"]
@@ -74,27 +88,38 @@ for role in range(2):
 
             else:
                 group_names.append("No Groups Assigned")
-            """
 
             organizer_name = user_obj["first_name"] + " " + user_obj["last_name"]
             organizer_dept = ""
 
             organizer_loc = user_obj["location"]
 
-            meeting_init = json.loads(client.meeting.list(user_id=user_id).content)
-            meeting_page_count = int(meeting_init["page_size"])
+            meeting_init = json.loads(client.meeting.list(user_id=user_id, page_number=1, type="past").content)
+
+            print("meeting_init")
+            print(meeting_init)
+
+            meeting_page_count = int(meeting_init["page_count"])
 
             for meeting_page_number in range(meeting_page_count):
                 meeting_obj = json.loads(
                     client.meeting.list(user_id=user_id, page_number=meeting_page_number + 1, type="past").content)
                 meetings = meeting_obj["meetings"]
 
+                print("meetings")
+                print(meetings)
+
                 if len(meetings) > 0:
                     for meeting in meetings:
                         meeting_count += 1
 
                         meeting_id = meeting["id"]
-                        meeting_name = meeting["topic"]
+                        meeting_name1 = meeting["topic"]
+                        meeting_name = meeting_name1\
+                            .replace("/", "").replace("Aash-", "NotREC").replace("AASH-", "NotREC")\
+                            .replace("Mosaic", "NotREC").replace("Aash", "NotREC")\
+                            .replace("Aash ", "NotREC").replace("AKHB", "NotREC")\
+                            .replace("AKYSB", "NotREC").replace("AKSWB", "NotREC").replace("AKEB", "NotREC")
 
                         # print("\tMeeting: {}".format(meeting_name))
                         meeting_loc = ""
@@ -114,41 +139,61 @@ for role in range(2):
                         if meeting_report.get("start_time") is not None:
                             meeting_time = parse_date_string(meeting_report["start_time"])
 
-                        registrant_obj = get_registrants(meeting_id, client)
+                            registrant_count = 0
+                            registrant_obj = get_registrants(meeting_id, client)
+                            registrant_email_list = []
+                            if registrant_obj.get("registrants") is not None:
+                                registrants = registrant_obj["registrants"]
+                                for registrant in registrants:
+                                    registrant_count += 1
+                                    registrant_email = registrant["email"]
+                                    registrant_email_list.append(registrant_email)
 
-                        if registrant_obj.get("registrants") is not None:
-                            registrants = registrant_obj["registrants"]
-
-                            participant_list = []
+                                # remove duplicates from the registrant list
+                                registrant_email_list =  list(set(registrant_email_list))
 
                             participant_count = 0
                             participant_obj = get_participants(meeting_id, client)
+                            participant_list = []
 
                             if participant_obj.get("participants") is not None:
                                 participants = participant_obj["participants"]
-
+                                #print("participants")
+                                #print(participants)
                                 for participant in participants:
                                     participant_count += 1
-                                    participant_name = participant["name"].encode('utf-8')
+                                    participant_name = participant["name"].replace("\r\n", "\n").replace('\u2605', '').replace('\U0001f47d', '')
                                     participant_list.append(participant_name)
 
-                                # remove duplicates from the registrant list
+                                # remove duplicates from the participants list
                                 participant_list = list(set(participant_list))
 
                             section = []
 
-                            for i in range(len(participant_list)):
-                                section.append([meeting_name, meeting_id, meeting_loc, meeting_grades, meeting_time,
+                            for j in range(len(registrant_email_list)):
+                                for i in range(len(participant_list)):
+                                    section.append([meeting_name, meeting_id, meeting_loc, meeting_grades, meeting_time,
                                                 organizer_name, organizer_dept, organizer_loc,
-                                                participant_list[i].decode('utf-8')])
+                                                participant_list[i], registrant_email_list[j]])
 
                             print(section)
 
-                            # Write the CSV File
-                            with open(CSV_FILE_NAME, 'a', newline='') as report_file:
-                                writer = csv.writer(report_file)
-                                writer.writerows(section)
-                                print("Meeting Successfully Added!")
+                            curr_csv_name = meeting_loc + '.csv'
+
+                            if section and (meeting_loc in location):
+                                # Write the CSV File
+                                with open(curr_csv_name, 'a', newline='') as report_file:
+                                    writer = csv.writer(report_file)
+                                    writer.writerows(section)
+                                    print("Meeting Successfully Added!")
+
+                            elif section and (meeting_loc not in location):
+                                location.append(meeting_loc)
+                                with open(curr_csv_name, 'w', newline='' , encoding="utf-8") as report_file:
+                                    writer = csv.writer(report_file)
+                                    writer.writerow(header)
+                                    writer.writerows(section)
+                                    print("Report File Configured for " + meeting_loc)
 
                         else:
                             pass
@@ -156,3 +201,10 @@ for role in range(2):
                 else:
                     pass
                     # print("\tNo Meetings Found\n")
+                """
+                       #logic to print only email address
+                       else:
+                           print("email is : " + useremail)
+                """
+
+
