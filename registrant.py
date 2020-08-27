@@ -17,7 +17,7 @@ API_SECRET = config('API_SECRET')
 
 todayDate = datetime.date.today()
 
-CSV_FILE_NAME = "./data/" + str(todayDate) + ".csv"
+CSV_FILE_NAME = "./data/" + str(todayDate) + "-reg.csv"
 
 ROLE = 2
 
