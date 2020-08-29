@@ -4,7 +4,7 @@ import os
 import shutil
 
 from zoomus import ZoomClient
-from ZoomClassStats.utils import *
+from utils import *
 from decouple import config
 
 """
@@ -141,6 +141,10 @@ for role in range(2):
 
                             registrant_count = 0
                             registrant_obj = get_registrants(meeting_id, client)
+
+                            print("registrant")
+                            print(registrant_obj)
+
                             registrant_email_list = []
                             if registrant_obj.get("registrants") is not None:
                                 registrants = registrant_obj["registrants"]
@@ -151,6 +155,7 @@ for role in range(2):
 
                                 # remove duplicates from the registrant list
                                 registrant_email_list =  list(set(registrant_email_list))
+                                print(registrant_email_list)
 
                             participant_count = 0
                             participant_obj = get_participants(meeting_id, client)
@@ -167,14 +172,41 @@ for role in range(2):
 
                                 # remove duplicates from the participants list
                                 participant_list = list(set(participant_list))
+                                print(participant_list)
+
+                            section = []
+                            section_iter = 0
+
+                            # if len(registrant_email_list) < len(participant_list):
+                            #     section_iter = len(registrant_email_list)
+                            # else: section_iter = len(participant_list)
+                            #
+                            # for i in range(section_iter):
+                            #     print(i)
+                            #     section.append([meeting_name, meeting_id, meeting_loc, meeting_grades, meeting_time,
+                            #                     organizer_name, organizer_dept, organizer_loc,
+                            #                     participant_list[i], registrant_email_list[i]])
+                            section_length = 0
+
+                            if len(participant_list) <= len(registrant_email_list):
+                                section_length = len(registrant_email_list)
+                            else:
+                                section_length = len(participant_list)
 
                             section = []
 
-                            for j in range(len(registrant_email_list)):
-                                for i in range(len(participant_list)):
-                                    section.append([meeting_name, meeting_id, meeting_loc, meeting_grades, meeting_time,
-                                                organizer_name, organizer_dept, organizer_loc,
-                                                participant_list[i], registrant_email_list[j]])
+                            for i in range(section_length):
+                                section.append([meeting_name, meeting_id, meeting_loc, meeting_grades, meeting_time,
+                                                organizer_name, organizer_dept, organizer_loc, "", ""])
+
+                            for i in range(len(registrant_email_list)):
+                                section[i][8] = registrant_email_list[i]
+
+                            for i in range(len(participant_list)):
+                                section[i][9] = participant_list[i]
+
+                            # print(registrant_list)
+                            # print(participant_list)
 
                             print(section)
 
