@@ -23,9 +23,8 @@ Hour = str(datetime.datetime.now())[11:13]
 Minute = str(datetime.datetime.now())[14:16]
 DIR_NAME = "./data/" + str(todayDate) + "-" + Hour + "-" + Minute
 
-
 header = ["Meeting Name", "Meeting ID", "Meeting Location", "Meeting Grades", "Meeting Time", "Organizer",
-          "Organizer Department", "Organizer Location", "Participant Name" , "Registration_email" ]
+          "Organizer Department", "Organizer Location", "Participant Name", "Registration_email"]
 
 location = []
 
@@ -115,10 +114,10 @@ for role in range(2):
 
                         meeting_id = meeting["id"]
                         meeting_name1 = meeting["topic"]
-                        meeting_name = meeting_name1\
-                            .replace("/", "").replace("Aash-", "NotREC").replace("AASH-", "NotREC")\
-                            .replace("Mosaic", "NotREC").replace("Aash", "NotREC")\
-                            .replace("Aash ", "NotREC").replace("AKHB", "NotREC")\
+                        meeting_name = meeting_name1 \
+                            .replace("/", "").replace("Aash-", "NotREC").replace("AASH-", "NotREC") \
+                            .replace("Mosaic", "NotREC").replace("Aash", "NotREC") \
+                            .replace("Aash ", "NotREC").replace("AKHB", "NotREC") \
                             .replace("AKYSB", "NotREC").replace("AKSWB", "NotREC").replace("AKEB", "NotREC")
 
                         # print("\tMeeting: {}".format(meeting_name))
@@ -154,7 +153,7 @@ for role in range(2):
                                     registrant_email_list.append(registrant_email)
 
                                 # remove duplicates from the registrant list
-                                registrant_email_list =  list(set(registrant_email_list))
+                                registrant_email_list = list(set(registrant_email_list))
                                 print(registrant_email_list)
 
                             participant_count = 0
@@ -163,11 +162,13 @@ for role in range(2):
 
                             if participant_obj.get("participants") is not None:
                                 participants = participant_obj["participants"]
-                                #print("participants")
-                                #print(participants)
+                                # print("participants")
+                                # print(participants)
                                 for participant in participants:
                                     participant_count += 1
-                                    participant_name = participant["name"].replace("\r\n", "\n").replace('\u2605', '').replace('\U0001f47d', '')
+                                    participant_name = participant["name"].replace("\r\n", "\n").replace('\u2605',
+                                                                                                         '').replace(
+                                        '\U0001f47d', '')
                                     participant_list.append(participant_name)
 
                                 # remove duplicates from the participants list
@@ -221,7 +222,7 @@ for role in range(2):
 
                             elif section and (meeting_loc not in location):
                                 location.append(meeting_loc)
-                                with open(curr_csv_name, 'w', newline='' , encoding="utf-8") as report_file:
+                                with open(curr_csv_name, 'w', newline='', encoding="utf-8") as report_file:
                                     writer = csv.writer(report_file)
                                     writer.writerow(header)
                                     writer.writerows(section)
@@ -238,5 +239,3 @@ for role in range(2):
                        else:
                            print("email is : " + useremail)
                 """
-
-
