@@ -17,13 +17,14 @@ API_SECRET = config('API_SECRET')
 
 todayDate = datetime.date.today()
 
-CSV_FILE_NAME = "./data/" + str(todayDate) + "-reg.csv"
+CSV_FILE_NAME = "./data/REG-COUNT-" + str(todayDate) + ".csv"
 
 ROLE = 2
 
 EMAIL_IDENTIFIER = "vre."
+STEP_LITERAL = "STEP Teachers"
 
-header = ["User Name", "Group Name", "Registrant Count"]
+header = ["User Name", "Group Name", "Meeting Name", "Registrant Count"]
 
 with open(CSV_FILE_NAME, 'w', newline='') as report_file:
     writer = csv.writer(report_file)
@@ -50,17 +51,18 @@ for user_page_number in range(user_page_count):
     for user in user_list["users"]:
 
         user_email = user["email"]
-        registrant_count = 0
 
-        if EMAIL_IDENTIFIER in user_email:
+        reg_count_tot = 0
+
+        group_name = ""
+
+        if user.get("group_ids") is not None:
+            group_obj = get_group(user["group_ids"][0], client)
+            group_name = group_obj["name"]
+
+        if (EMAIL_IDENTIFIER in user_email) or (group_name == STEP_LITERAL):
 
             user_id = user["id"]
-            group_name = ""
-            registrant_list = []
-
-            if user.get("group_ids") is not None:
-                group_obj = get_group(user["group_ids"][0], client)
-                group_name = group_obj["name"]
 
             meeting_init = json.loads(client.meeting.list(user_id=user_id, page_number=1, type="past").content)
             meeting_page_count = int(meeting_init["page_count"])
@@ -77,13 +79,17 @@ for user_page_number in range(user_page_count):
                     meeting_name = meeting["topic"]
 
                     registrant_obj = get_registrants(meeting_id, client)
-                    # print(registrant_obj)
+                    print(meeting)
 
                     if registrant_obj.get("registrants") is not None:
                         registrants = registrant_obj["registrants"]
 
+                        registrant_list = []
+                        registrant_count = 0
+
                         for registrant in registrants:
                             registrant_count += 1
+                            reg_count_tot += 1
                             # print(registrant)
 
                             registrant_first_name = registrant["first_name"]
@@ -96,34 +102,24 @@ for user_page_number in range(user_page_count):
                         # remove duplicates from the registrant list
                         registrant_list = list(set(registrant_list))
 
-                        section = []
+                        section = [user_email, group_name, meeting_name, registrant_count]
 
-                        # for i in range(len(participant_list)):
-                        #     section.append([meeting_name, meeting_id, meeting_loc, meeting_grades, meeting_time,
-                        #                     organizer_name, organizer_dept, organizer_loc,
-                        #                     participant_list[i].decode('utf-8')])
-                        #
-                        # print(section)
-                        #
-                        # # Write the CSV File
-                        # with open(CSV_FILE_NAME, 'a', newline='') as report_file:
-                        #     writer = csv.writer(report_file)
-                        #     writer.writerows(section)
-                        #     print("Meeting Successfully Added!")
+                        # Write the CSV File
+                        with open(CSV_FILE_NAME, 'a', newline='') as report_file:
+                            writer = csv.writer(report_file)
+                            writer.writerow(section)
+                            print("Meeting Successfully Added!")
 
                     else:
                         pass
                         # print("\t\tNo Registrations found!\n")
 
             print("\n" + user_email + " | " + group_name + " | " + str(registrant_count))
-            print(registrant_list)
 
-            section.append([user_email, group_name, registrant_count])
-
-            print(section)
+            section = [user_email, group_name, "TOTAL=", reg_count_tot]
 
             # Write the CSV File
             with open(CSV_FILE_NAME, 'a', newline='') as report_file:
                 writer = csv.writer(report_file)
-                writer.writerows(section)
+                writer.writerow(section)
                 print("Meeting Successfully Added!")
