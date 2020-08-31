@@ -25,6 +25,8 @@ CSV_FILE_NAME = "./data/REG-COUNT-" + str(todayDate) + ".csv"
 ROLE = 2
 
 EMAIL_IDENTIFIER = "vre."
+EMAIL_IDENTIFIER1 = ".org."
+
 STEP_LITERAL = "STEP Teachers"
 
 header = ["User Name", "Group Name", "Meeting Name", "Registrant Count"]
@@ -32,7 +34,7 @@ header = ["User Name", "Group Name", "Meeting Name", "Registrant Count"]
 with open(CSV_FILE_NAME, 'w', newline='') as report_file:
     writer = csv.writer(report_file)
     writer.writerow(header)
-    print("Report File Configured!")
+    print("Report File Configured! ")
 
 # initialize the client
 client = ZoomClient(API_KEY, API_SECRET)
@@ -63,7 +65,7 @@ for user_page_number in range(user_page_count):
             group_obj = get_group(user["group_ids"][0], client)
             group_name = group_obj["name"]
 
-        if (EMAIL_IDENTIFIER in user_email) or (group_name == STEP_LITERAL):
+        if (EMAIL_IDENTIFIER in user_email) or (group_name == STEP_LITERAL) or (EMAIL_IDENTIFIER1 in user_email):
 
             user_id = user["id"]
 

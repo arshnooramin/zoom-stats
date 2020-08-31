@@ -110,7 +110,6 @@ for role in range(2):
 
                 print("meetings")
                 print(meetings)
-
                 if len(meetings) > 0:
                     for meeting in meetings:
                         meeting_count += 1
@@ -118,11 +117,14 @@ for role in range(2):
                         meeting_id = meeting["id"]
                         meeting_name1 = meeting["topic"]
                         meeting_name = meeting_name1\
-                            .replace("/", "").replace("Aash-", "NotREC").replace("AASH-", "NotREC")\
-                            .replace("Mosaic", "NotREC").replace("Aash", "NotREC")\
-                            .replace("Aash ", "NotREC").replace("AKHB", "NotREC")\
-                            .replace("AKYSB", "NotREC").replace("AKSWB", "NotREC").replace("AKEB", "NotREC")\
-                            .replace("Curriculum", "NotREC").replace("July", "NotREC").replace("My Meeting", "NotREC").replace("AASH ", "NotREC")
+                            .replace("/", " ").replace("Aash-", "NotREC ").replace("AASH-", "NotREC ")\
+                            .replace("Mosaic", "NotREC ").replace("Aash", "NotREC ")\
+                            .replace("Aash ", "NotREC ").replace("AKHB", "NotREC ")\
+                            .replace("AKYSB", "NotREC ").replace("AKSWB", "NotREC ").replace("AKEB", "NotREC ")\
+                            .replace("Curriculum", "NotREC").replace("July", "NotREC").replace("My Meeting", "NotREC ")\
+                            .replace("AASH ", "NotREC").replace("Sunday ", "NotREC").replace("Monday ", "NotREC")\
+                            .replace("Tuesday ", "NotREC").replace("Wednesday ", "NotREC ").replace("Thursday ", "NotREC ")\
+                            .replace("Friday ", "NotREC ").replace("Saturday ", "NotREC ")
 
                         # print("\tMeeting: {}".format(meeting_name))
                         meeting_loc = ""
