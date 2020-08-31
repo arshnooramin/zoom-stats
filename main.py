@@ -7,6 +7,8 @@ from zoomus import ZoomClient
 from utils import *
 from decouple import config
 
+from ZoomClassStats.utils import get_groups
+
 """
 Flow:
 -> find users in role 2 
@@ -119,7 +121,8 @@ for role in range(2):
                             .replace("/", "").replace("Aash-", "NotREC").replace("AASH-", "NotREC")\
                             .replace("Mosaic", "NotREC").replace("Aash", "NotREC")\
                             .replace("Aash ", "NotREC").replace("AKHB", "NotREC")\
-                            .replace("AKYSB", "NotREC").replace("AKSWB", "NotREC").replace("AKEB", "NotREC")
+                            .replace("AKYSB", "NotREC").replace("AKSWB", "NotREC").replace("AKEB", "NotREC")\
+                            .replace("Curriculum", "NotREC").replace("July", "NotREC").replace("My Meeting", "NotREC").replace("AASH ", "NotREC")
 
                         # print("\tMeeting: {}".format(meeting_name))
                         meeting_loc = ""
@@ -167,7 +170,7 @@ for role in range(2):
                                 #print(participants)
                                 for participant in participants:
                                     participant_count += 1
-                                    participant_name = participant["name"].replace("\r\n", "\n").replace('\u2605', '').replace('\U0001f47d', '')
+                                    participant_name = participant["name"].replace("\r\n", "\n").replace('\u2605', '').replace('\U0001f47d', '').replace(' ❤️', '')
                                     participant_list.append(participant_name)
 
                                 # remove duplicates from the participants list
@@ -214,14 +217,14 @@ for role in range(2):
 
                             if section and (meeting_loc in location):
                                 # Write the CSV File
-                                with open(curr_csv_name, 'a', newline='') as report_file:
+                                with open(curr_csv_name, 'a', newline='' , encoding="utf-8", errors="ignore") as report_file:
                                     writer = csv.writer(report_file)
                                     writer.writerows(section)
                                     print("Meeting Successfully Added!")
 
                             elif section and (meeting_loc not in location):
                                 location.append(meeting_loc)
-                                with open(curr_csv_name, 'w', newline='' , encoding="utf-8") as report_file:
+                                with open(curr_csv_name, 'w', newline='' , encoding="utf-8", errors="ignore") as report_file:
                                     writer = csv.writer(report_file)
                                     writer.writerow(header)
                                     writer.writerows(section)

@@ -1,8 +1,11 @@
 import csv
 import datetime
+import json
+
 from zoomus import ZoomClient
-from utils import *
 from decouple import config
+
+from ZoomClassStats.utils import *
 
 """
 Flow:

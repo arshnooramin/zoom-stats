@@ -29,6 +29,15 @@ def get_groups(client_pointer, page_size=300):
 
     return group_dict
 
+def get_group(group_id, client_pointer):
+    resp_obj = client_pointer.get_request("/groups/{}".format(group_id))
+    # group_list = json.loads(resp_obj.content)["groups"]
+    # group_dict = {}
+    #
+    # for group in group_list:
+    #     group_dict[group["id"]] = group["name"]
+    return json.loads(resp_obj.content)
+
 
 def parse_date_string(date_string):
     date_time = date_string.split("T")
