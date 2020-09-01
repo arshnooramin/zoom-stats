@@ -1,10 +1,8 @@
 import csv
 import datetime
 import json
-
 from zoomus import ZoomClient
 from decouple import config
-
 from ZoomClassStats.utils import *
 
 """
@@ -25,8 +23,8 @@ CSV_FILE_NAME = "./data/REG-COUNT-" + str(todayDate) + ".csv"
 ROLE = 2
 
 EMAIL_IDENTIFIER = "vre."
-EMAIL_IDENTIFIER1 = ".org."
-
+EMAIL_IDENTIFIER1 = ".org"
+EMAIL_IDENTIFIER2 = "zoom"
 STEP_LITERAL = "STEP Teachers"
 
 header = ["User Name", "Group Name", "Meeting Name", "Registrant Count"]
@@ -65,7 +63,8 @@ for user_page_number in range(user_page_count):
             group_obj = get_group(user["group_ids"][0], client)
             group_name = group_obj["name"]
 
-        if (EMAIL_IDENTIFIER in user_email) or (group_name == STEP_LITERAL) or (EMAIL_IDENTIFIER1 in user_email):
+        if (EMAIL_IDENTIFIER in user_email) or (group_name == STEP_LITERAL) or (
+                EMAIL_IDENTIFIER1 in user_email) and not (EMAIL_IDENTIFIER2 in user_email):
 
             user_id = user["id"]
 
