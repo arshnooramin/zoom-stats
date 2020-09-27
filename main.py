@@ -86,9 +86,10 @@ for role in range(2):
             organizer_name = user_obj["first_name"] + " " + user_obj["last_name"]
             organizer_dept = ""
 
-            organizer_loc = user_obj["location"]
-
-            meeting_init = json.loads(client.meeting.list(user_id=user_id, page_number=1, type="past").content)
+            organizer_loc = user_obj.get('location')
+            print(organizer_loc)
+            if organizer_loc is not None :
+                meeting_init = json.loads(client.meeting.list(user_id=user_id, page_number=1, type="past").content)
 
             print("meeting_init")
             print(meeting_init)
